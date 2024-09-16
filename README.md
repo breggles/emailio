@@ -12,7 +12,7 @@ emailio.py email_template.html email_data.csv
 
 ## Special fields
 
-* email - email address of the recipient
+* email_address - email address of the recipient
 * subject - subject of the email
 
 ## Sample email template

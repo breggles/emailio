@@ -31,7 +31,7 @@ with open(data_path, mode='r') as csv_file:
 
         outlook = win32.Dispatch('Outlook.Application')
         mail = outlook.CreateItem(0)
-        mail.To = row['email']
+        mail.To = row['email_address']
         mail.Subject = row['subject']
         # mail.Body = row['plain_text_body']
         mail.HTMLBody = html_body
