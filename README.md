@@ -4,7 +4,13 @@ Sends templated emails through your Outlook. Like Word Mail Merge, but less shit
 
 ## Prerequisites
 
+### Windows
+
 Requires [Pywin32](https://pypi.org/project/pywin32/).
+
+### MacOS
+
+Requires [py-applescript](https://pypi.org/project/py-applescript/)
 
 ## Usage
 
