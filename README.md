@@ -2,15 +2,17 @@
 
 Sends templated emails through your Outlook. Like Word Mail Merge, but less shit.
 
+## Supported OSs
+
+Tested on Windows. Might work on macOS...
+
 ## Prerequisites
 
-### Windows
+Run this to install required packages:
 
-Requires [Pywin32](https://pypi.org/project/pywin32/).
-
-### MacOS
-
-Requires [py-applescript](https://pypi.org/project/py-applescript/)
+```bash
+pip install pywin32 appscript jinja2 opencensus-ext-azure
+```
 
 ## Usage
 
