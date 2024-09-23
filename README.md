@@ -46,12 +46,12 @@ emailio.py email_template.html email_data.csv
 ## Sample email data
 
 ```csv
-name,email,subject,description,sender_name
-Joe Blogs,joe.blogs@example.com,New Product Launch,We are thrilled to announce the release of our newest product.,Company Inc.
+email_address,subject,name,description,sender_name,email_hash
+joe.blogs@example.com,New Product Launch,Joe Blogs,We are thrilled to announce the release of our newest product.,Company Inc.,02934t823908ht9234h9t2384
 ```
 
 ## Application Insights
 
-If the `APPLICATIONINSIGHTS_CONNECTION_STRING` environment variable is set, logs an `email-sent` event to AppInsights, with the `subject` as a custom dimension.
+Requries the `APPLICATIONINSIGHTS_CONNECTION_STRING` environment variable to be set. Logs an `email-sent` custom event to AppInsights, with the `subject` as a custom dimension.
 
-NB: requires a `email_hash` field in the csv data, which is used to populate the `email_hash` custom dimension.
+NB: requires an `email_hash` field in the csv data, which is used to populate the `email_hash` custom dimension.
