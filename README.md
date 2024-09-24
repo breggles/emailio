@@ -16,12 +16,14 @@ pip install pywin32 appscript jinja2 opencensus-ext-azure
 
 ## Usage
 
-emailio.py email_template.html email_data.csv
+emailio.py --template TEMPLATE_PATH --data DATA_PATH --ai-connection-string AI_CONNECTION_STRING --subject SUBJECT
 
-## Special fields
+## Data file format
+
+The data file is in CSV format and has the following required fields:
 
 * email_address - email address of the recipient
-* subject - subject of the email
+* email_hash - hash of the email address
 
 ## Sample email template
 
@@ -39,19 +41,17 @@ emailio.py email_template.html email_data.csv
     <p>{{ description }}</p>
 
     <p>Best regards,</p>
-    <p>{{ sender_name }}</p>
+    <p>Company Inc.</p>
 </body>
 </html>
 ```
 ## Sample email data
 
 ```csv
-email_address,subject,name,description,sender_name,email_hash
-joe.blogs@example.com,New Product Launch,Joe Blogs,We are thrilled to announce the release of our newest product.,Company Inc.,02934t823908ht9234h9t2384
+email_address,name,description,email_hash
+joe.blogs@example.com,Joe Blogs,We are thrilled to announce the release of our newest product.,02934t823908ht9234h9t2384
 ```
 
 ## Application Insights
 
-Requries the `APPLICATIONINSIGHTS_CONNECTION_STRING` environment variable to be set. Logs an `email-sent` custom event to AppInsights, with the `subject` as a custom dimension.
-
-NB: requires an `email_hash` field in the csv data, which is used to populate the `email_hash` custom dimension.
+Logs an `email-sent` custom event to AppInsights, with the `email-hash` and `subject` as a custom dimensions.
