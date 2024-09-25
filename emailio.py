@@ -9,6 +9,7 @@ from jinja2 import Template
 import logging
 from opencensus.ext.azure.log_exporter import AzureEventHandler
 import argparse
+import hashlib
 
 parser = argparse.ArgumentParser(description="Send templated emails")
 parser.add_argument("-t", "--template", required=True, help="Path to the email template file")
@@ -69,6 +70,10 @@ with open(data_path, mode='r') as csv_file:
             mail.to_recipients.set([recipient])
             mail.send()
 
-        properties = {'custom_dimensions': {'email_hash': row['email_hash'],
+        salted_email = row["email_address"] + "-foundrywebsite"
+
+        email_hash = hashlib.sha256(salted_email.encode()).hexdigest()
+
+        properties = {'custom_dimensions': {'email_hash': email_hash,
                                             'subject': subject}}
         ai_logger.info('email-sent', extra=properties)

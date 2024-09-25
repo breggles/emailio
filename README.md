@@ -23,7 +23,6 @@ emailio.py --template TEMPLATE_PATH --data DATA_PATH --ai-connection-string AI_C
 The data file is in CSV format and has the following required fields:
 
 * email_address - email address of the recipient
-* email_hash - hash of the email address
 
 ## Sample email template
 
@@ -48,10 +47,10 @@ The data file is in CSV format and has the following required fields:
 ## Sample email data
 
 ```csv
-email_address,name,description,email_hash
-joe.blogs@example.com,Joe Blogs,We are thrilled to announce the release of our newest product.,02934t823908ht9234h9t2384
+email_address,name,description
+joe.blogs@example.com,Joe Blogs,We are thrilled to announce the release of our newest product.
 ```
 
 ## Application Insights
 
-Logs an `email-sent` custom event to AppInsights, with the `email-hash` and `subject` as a custom dimensions.
+Logs an `email-sent` custom event to AppInsights, with the `email-hash` and `subject` as a custom dimensions. The `email-hash` is a SHA256 hash of the email address and a salt.
