@@ -1,6 +1,6 @@
 # Emailio
 
-Sends templated emails through your Outlook. Like Word Mail Merge, but less shit.
+Sends templated emails through your Outlook. Like Word Mail Merge, but less shit. Also, it logs an event to AppInsights for every email sent.
 
 ## Supported OSs
 
