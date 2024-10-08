@@ -16,7 +16,9 @@ pip install pywin32 appscript jinja2 opencensus-ext-azure
 
 ## Usage
 
+```sh
 emailio.py --template TEMPLATE_PATH --data DATA_PATH --ai-connection-string AI_CONNECTION_STRING --subject SUBJECT
+```
 
 ## Data file format
 
