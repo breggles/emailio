@@ -10,12 +10,22 @@ import logging
 from opencensus.ext.azure.log_exporter import AzureEventHandler
 import argparse
 import hashlib
+from azure.cosmos import CosmosClient
+import datetime
+import uuid
 
 parser = argparse.ArgumentParser(description="Send templated emails")
+
 parser.add_argument("-t", "--template", required=True, help="Path to the email template file")
 parser.add_argument("-d", "--data", required=True, help="Path to the data CSV file")
-parser.add_argument("-c", "--ai-connection-string", required=True, help="Application Insights connection string")
 parser.add_argument("-s", "--subject", required=True, help="Email subject")
+parser.add_argument("-c", "--campaign", required=True, help="Email campaign, gets logged in Cosmos")
+parser.add_argument("-ac", "--ai-connection-string", required=True, help="Application Insights connection string")
+parser.add_argument('-ce', '--cosmos-endpoint', type=str, required=True, help='Azure Cosmos DB endpoint.')
+parser.add_argument('-ck', '--cosmos-key', type=str, required=True, help='Azure Cosmos DB key.')
+parser.add_argument('-cn', '--cosmos-database', type=str, required=True, help='Azure Cosmos DB database name.')
+parser.add_argument('-co', '--cosmos-container', type=str, required=True, help='Azure Cosmos DB container name.')
+
 args = parser.parse_args()
 
 template_path = args.template
@@ -77,3 +87,40 @@ with open(data_path, mode='r') as csv_file:
         properties = {'custom_dimensions': {'email_hash': email_hash,
                                             'subject': subject}}
         ai_logger.info('email-sent', extra=properties)
+
+        # Cosmos
+
+        client = CosmosClient(args.cosmos_endpoint, args.cosmos_key)
+        database = client.get_database_client(args.cosmos_database)
+        container = database.get_container_client(args.cosmos_container)
+
+        query = "SELECT c.id FROM c WHERE c.email = @email"
+        parameters = [
+            {"name": "@email", "value": row['email_address']}
+        ]
+
+        items = list(container.query_items(
+            query=query,
+            parameters=parameters,
+            enable_cross_partition_query=True
+        ))
+
+        if len(items) > 1:
+            raise Exception(f"Multiple items found for email {row['email_address']}")
+
+        if len(items) < 1:
+            document_data = {
+                'id': str(uuid.uuid4()),
+                'email': row['email_address'],
+                'campaigns': [args.campaign],
+                'timestamp': datetime.datetime.utcnow().isoformat()
+            }
+        else:
+            print(items[0]["id"])
+            item_id = items[0]["id"]
+            document_data = container.read_item(item_id,
+                                                partition_key=item_id)
+            print(document_data)
+            document_data['campaigns'].append(args.campaign)
+
+        container.upsert_item(document_data)
