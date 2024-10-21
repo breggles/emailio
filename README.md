@@ -62,7 +62,7 @@ joe.blogs@example.com,Joe Blogs,https://example.com
 
 ## Application Insights
 
-For every email sent, logs an `email-sent` custom event to AppInsights, with the `email-hash`, `campaign` and `subject` as a custom dimensions. The `email-hash` is a SHA256 hash of the email address and a salt.
+For every email sent, logs an `email-sent` custom event to AppInsights, with the `campaign`, `subject`, and the hash of the `email_address` as a custom dimensions.
 
 ## Cosmos DB
 
