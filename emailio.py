@@ -37,7 +37,7 @@ def send_email(subject, row):
         mail.send()
 
 
-def log_email_sent(ai_connection_string, email_address, args, subject):
+def log_email_sent(ai_connection_string, email_address, user_id, args, subject):
     ai_logger = logging.getLogger(__name__)
     ai_logger.addHandler(AzureEventHandler(connection_string=ai_connection_string))
     ai_logger.setLevel(logging.INFO)
@@ -47,13 +47,16 @@ def log_email_sent(ai_connection_string, email_address, args, subject):
 
     properties = {'custom_dimensions': {'email_hash': email_hash,
                                         'subject': subject,
-                                        'campaign': args.campaign}}
+                                        'campaign': args.campaign,
+                                        'user_Id': user_id},
+                  'user_Id': user_id} # Does not work, just leaving it here because I'm delusional
     ai_logger.info('email-sent', extra=properties)
 
 
 def update_cosmos(cosmos_endpoint,
                   cosmos_key,
                   email_address,
+                  user_id,
                   campaign):
 
     client = CosmosClient(cosmos_endpoint, cosmos_key)
@@ -79,6 +82,7 @@ def update_cosmos(cosmos_endpoint,
             'id': str(uuid.uuid4()),
             'email': email_address,
             'campaigns': [campaign],
+            'user_id': user_id,
             'timestamp8601': datetime.datetime.utcnow().isoformat()
         }
     else:
@@ -90,6 +94,10 @@ def update_cosmos(cosmos_endpoint,
 
         if campaign not in document_data['campaigns']:
             document_data['campaigns'].append(campaign)
+
+        # Update users that were created before we had a user id
+        #
+        document_data['user_id'] = user_id
 
     container.upsert_item(document_data)
 
@@ -156,11 +164,16 @@ with open(data_path, mode='r') as csv_file:
 
         send_email(subject, row)
 
-        log_email_sent(ai_connection_string, row['email_address'], args, subject)
+        log_email_sent(ai_connection_string,
+                       row['email_address'],
+                       row['user_id'],
+                       args,
+                       subject)
 
         update_cosmos(args.cosmos_endpoint,
                       args.cosmos_key,
                       row['email_address'],
+                      row['user_id'],
                       args.campaign)
 
         print(row['email_address'])
