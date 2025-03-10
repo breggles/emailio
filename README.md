@@ -32,6 +32,7 @@ emailio.py \
 The data file is in CSV format and has the following required fields:
 
 * email_address - email address of the recipient
+* user_id - and ID for identifying the user
 
 ## Sample email template
 
@@ -56,14 +57,14 @@ The data file is in CSV format and has the following required fields:
 ## Sample email data
 
 ```csv
-email_address,name,url
-joe.blogs@example.com,Joe Blogs,https://example.com
+email_address,name,url,user_id
+joe.blogs@example.com,Joe Blogs,https://example.com,123
 ```
 
 ## Application Insights
 
-For every email sent, logs an `email-sent` custom event to AppInsights, with the `campaign`, `subject`, and the hash of the `email_address` as a custom dimensions.
+For every email sent, logs an `email-sent` custom event to AppInsights, with the `campaign`, `subject`, `user_id`, and the hash of the `email_address` as a custom dimensions.
 
 ## Cosmos DB
 
-For every email sent, updates user in the Signups container of the Website database. Adds the `campaign` to the `campaigns` array.
+For every email sent, updates user in the Signups container of the Website database. Adds/updates `name` and `user_id`, and adds the `campaign` to the `campaigns` array.
