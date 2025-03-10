@@ -37,10 +37,11 @@ def send_email(subject, row):
         mail.send()
 
 
-def log_email_sent(ai_connection_string, email_address, user_id, args, subject):
-    ai_logger = logging.getLogger(__name__)
-    ai_logger.addHandler(AzureEventHandler(connection_string=ai_connection_string))
-    ai_logger.setLevel(logging.INFO)
+def log_email_sent(ai_connection_string,
+                   email_address,
+                   user_id,
+                   args,
+                   subject):
 
     salted_email = email_address + "-foundrywebsite"
     email_hash = hashlib.sha256(salted_email.encode()).hexdigest()
@@ -150,6 +151,11 @@ template_path = args.template
 data_path = args.data
 ai_connection_string = args.ai_connection_string
 subject = args.subject
+
+ai_logger = logging.getLogger(__name__)
+ai_logger.addHandler(AzureEventHandler(connection_string=ai_connection_string))
+ai_logger.setLevel(logging.INFO)
+
 
 with open(template_path, 'r') as template_file:
     template_content = template_file.read()
