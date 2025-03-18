@@ -11,7 +11,7 @@ Tested on Windows. Might work on macOS...
 Run this to install required packages:
 
 ```bash
-pip install pywin32 appscript jinja2 opencensus-ext-azure
+pip install pywin32 appscript jinja2 opencensus-ext-azure azure.cosmos
 ```
 
 ## Usage
