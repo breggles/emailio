@@ -14,7 +14,7 @@ if sys.platform == 'win32':
     import win32com.client as win32
 
 
-def send_email(subject, row):
+def send_email(subject, row, cc_addresses):
 
     html_body = email_template.render(row)
 
@@ -22,18 +22,10 @@ def send_email(subject, row):
         outlook = win32.Dispatch('Outlook.Application')
         mail = outlook.CreateItem(0)
         mail.To = row['email_address']
+        mail.CC = ', '.join(cc_addresses)
         mail.Subject = subject
         mail.HTMLBody = html_body
         mail.Send()
-
-    elif sys.platform == 'darwin':
-        recipient = app('Mail').make(new=k.to_recipient,
-                                     with_properties={k.address: row['email_address']})
-        mail = app('Mail').make(new=k.outgoing_message)
-        mail.subject.set(subject)
-        mail.content.set(html_body)
-        mail.to_recipients.set([recipient])
-        mail.send()
 
 
 def log_email_sent(ai_connection_string,
@@ -107,6 +99,7 @@ parser.add_argument("-t", "--template", required=True, help="Path to the email t
 parser.add_argument("-d", "--data", required=True, help="Path to the data CSV file")
 parser.add_argument("-s", "--subject", required=True, help="Email subject")
 parser.add_argument("-c", "--campaign", required=True, help="Email campaign, gets logged in Cosmos")
+parser.add_argument('-cc', "--carbon-copy", nargs='*', help='Specify CC email addresses')
 parser.add_argument("-ac", "--ai-connection-string", required=True, help="Application Insights connection string")
 parser.add_argument('-ce', '--cosmos-endpoint', type=str, required=True, help='Azure Cosmos DB endpoint.')
 parser.add_argument('-ck', '--cosmos-key', type=str, required=True, help='Azure Cosmos DB key.')
@@ -149,6 +142,7 @@ template_path = args.template
 data_path = args.data
 ai_connection_string = args.ai_connection_string
 subject = args.subject
+cc_addresses = args.cc if args.cc else []
 
 configure_azure_monitor(
     logger_name=__name__,
@@ -170,7 +164,7 @@ with open(data_path, mode='r') as csv_file:
 
     for row in csv_reader:
 
-        send_email(subject, row)
+        send_email(subject, row, cc_addresses)
 
         log_email_sent(ai_connection_string,
                        row['email_address'],
