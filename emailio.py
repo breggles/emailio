@@ -8,11 +8,10 @@ import sys
 import uuid
 from azure.cosmos import CosmosClient
 from jinja2 import Template
-from opencensus.ext.azure.log_exporter import AzureEventHandler
+from azure.monitor.opentelemetry import configure_azure_monitor
+from opentelemetry import trace
 if sys.platform == 'win32':
     import win32com.client as win32
-elif sys.platform == 'darwin':
-    from appscript import app, k
 
 
 def send_email(subject, row):
@@ -46,11 +45,10 @@ def log_email_sent(ai_connection_string,
     salted_email = email_address + "-foundrywebsite"
     email_hash = hashlib.sha256(salted_email.encode()).hexdigest()
 
-    properties = {'custom_dimensions': {'email_hash': email_hash,
-                                        'subject': subject,
-                                        'campaign': args.campaign,
-                                        'user_Id': user_id},
-                  'user_Id': user_id} # Does not work, just leaving it here because I'm delusional
+    properties = {'email_hash': email_hash,
+                  'subject': subject,
+                  'campaign': args.campaign}
+
     ai_logger.info('email-sent', extra=properties)
 
 
@@ -75,8 +73,8 @@ def update_cosmos(cosmos_endpoint,
         enable_cross_partition_query=True
     ))
 
-    if len(items) > 1:
-        raise Exception(f"Multiple items found for email {email_address}")
+    # if len(items) > 1:
+    #     raise Exception(f"Multiple items found for email {email_address}")
 
     if len(items) < 1:
         document_data = {
@@ -152,8 +150,12 @@ data_path = args.data
 ai_connection_string = args.ai_connection_string
 subject = args.subject
 
+configure_azure_monitor(
+    logger_name=__name__,
+    connection_string=ai_connection_string,
+)
+
 ai_logger = logging.getLogger(__name__)
-ai_logger.addHandler(AzureEventHandler(connection_string=ai_connection_string))
 ai_logger.setLevel(logging.INFO)
 
 
