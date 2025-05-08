@@ -142,7 +142,7 @@ template_path = args.template
 data_path = args.data
 ai_connection_string = args.ai_connection_string
 subject = args.subject
-cc_addresses = args.cc or []
+cc_addresses = args.carbon_copy or []
 
 configure_azure_monitor(
     logger_name=__name__,
