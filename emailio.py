@@ -142,7 +142,7 @@ template_path = args.template
 data_path = args.data
 ai_connection_string = args.ai_connection_string
 subject = args.subject
-cc_addresses = args.cc if args.cc else [] # currently fails if args.cc is not set, make it so that if it is not set cc_addresses is an empty list, ai!
+cc_addresses = args.cc or []
 
 configure_azure_monitor(
     logger_name=__name__,
