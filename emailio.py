@@ -30,7 +30,7 @@ def send_email(subject, row, cc_addresses):
 
 def log_email_sent(ai_connection_string,
                    email_address,
-                   user_id,
+                   license_key,
                    args,
                    subject):
 
@@ -47,7 +47,7 @@ def log_email_sent(ai_connection_string,
 def update_cosmos(cosmos_endpoint,
                   cosmos_key,
                   email_address,
-                  user_id,
+                  license_key,
                   campaign):
 
     client = CosmosClient(cosmos_endpoint, cosmos_key)
@@ -73,7 +73,7 @@ def update_cosmos(cosmos_endpoint,
             'id': str(uuid.uuid4()),
             'email': email_address,
             'campaigns': [campaign],
-            'user_id': user_id,
+            'license_key': license_key,
             'timestamp8601': datetime.datetime.utcnow().isoformat()
         }
     else:
@@ -88,7 +88,7 @@ def update_cosmos(cosmos_endpoint,
 
         # Update users that were created before we had a user id
         #
-        document_data['user_id'] = user_id
+        document_data['license_key'] = license_key
 
     container.upsert_item(document_data)
 
@@ -168,14 +168,14 @@ with open(data_path, mode='r') as csv_file:
 
         log_email_sent(ai_connection_string,
                        row['email_address'],
-                       row['user_id'],
+                       row['license_key'],
                        args,
                        subject)
 
         update_cosmos(args.cosmos_endpoint,
                       args.cosmos_key,
                       row['email_address'],
-                      row['user_id'],
+                      row['license_key'],
                       args.campaign)
 
         print(row['email_address'])
