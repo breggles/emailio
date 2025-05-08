@@ -74,7 +74,7 @@ def update_cosmos(cosmos_endpoint,
             'email': email_address,
             'campaigns': [campaign],
             'license_key': license_key,
-            'timestamp8601': datetime.datetime.utcnow().isoformat()
+            'timestamp8601': datetime.datetime.now(datetime.UTC).isoformat()
         }
     else:
         item_id = items[0]["id"]
