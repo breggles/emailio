@@ -1,0 +1,4 @@
+azure-cosmos
+Jinja2
+opencensus-ext-azure
+pywin32
