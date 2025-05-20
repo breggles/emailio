@@ -8,10 +8,8 @@ import sys
 import uuid
 from azure.cosmos import CosmosClient
 from jinja2 import Template
-from azure.monitor.opentelemetry import configure_azure_monitor
-from opentelemetry import trace
-if sys.platform == 'win32':
-    import win32com.client as win32
+from opencensus.ext.azure.log_exporter import AzureLogHandler
+import win32com.client
 
 
 def send_email(subject, row, cc_addresses):
@@ -19,7 +17,7 @@ def send_email(subject, row, cc_addresses):
     html_body = email_template.render(row)
 
     if sys.platform == 'win32':
-        outlook = win32.Dispatch('Outlook.Application')
+        outlook = win32com.client.Dispatch('Outlook.Application')
         mail = outlook.CreateItem(0)
         mail.To = row['email_address']
         mail.CC = ', '.join(cc_addresses)
@@ -144,12 +142,8 @@ ai_connection_string = args.ai_connection_string
 subject = args.subject
 cc_addresses = args.carbon_copy or []
 
-configure_azure_monitor(
-    logger_name=__name__,
-    connection_string=ai_connection_string,
-)
-
 ai_logger = logging.getLogger(__name__)
+ai_logger.addHandler(AzureLogHandler(connection_string=ai_connection_string))
 ai_logger.setLevel(logging.INFO)
 
 
