@@ -4,14 +4,14 @@ Sends templated emails through your Outlook. Like Word Mail Merge, but less shit
 
 ## Supported OSs
 
-Tested on Windows. Might work on macOS...
+Only work on Windows at the moment.
 
 ## Prerequisites
 
 Run this to install required packages:
 
 ```bash
-pip install pywin32 appscript jinja2 opencensus-ext-azure azure.cosmos
+pip install -r requirements.txt
 ```
 
 ## Usage
@@ -24,7 +24,8 @@ emailio.py \
     --campaign CAMPAIGN \
     --ai-connection-string AI_CONNECTION_STRING -\
     --cosmos-endpoint COSMOS_ENDPOINT \
-    --cosmos-key COSMOS_KEY
+    --cosmos-key COSMOS_KEY \
+    --carbon-copy SOME_MAILING_LIST
 ```
 
 ## Data file format
